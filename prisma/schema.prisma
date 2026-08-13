@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Branch {
+  id            String   @id @default(cuid())
+  name          String
+  timezone      String   @default("America/Mexico_City")
+  address       String?
+  phone         String?
+  ghlLocationId String?
+  ghlCalendarId String?
+  createdAt     DateTime @default(now())
+
+  barbers      Barber[]
+  services     Service[]
+  appointments Appointment[]
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  name        String
+  description String?
+  durationMin Int
+  priceCents  Int
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  barbers      BarberService[]
+  appointments Appointment[]
+
+  @@index([branchId, active])
+}
+
+model Barber {
+  id            String   @id @default(cuid())
+  branchId      String
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  name          String
+  bio           String?
+  photoUrl      String?
+  active        Boolean  @default(true)
+  ghlUserId     String?
+  ghlCalendarId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  services     BarberService[]
+  workingHours WorkingHour[]
+  timeOff      TimeOff[]
+  appointments Appointment[]
+
+  @@index([branchId, active])
+}
+
+model BarberService {
+  barberId  String
+  serviceId String
+  barber    Barber  @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([barberId, serviceId])
+}
+
+model WorkingHour {
+  id       String  @id @default(cuid())
+  barberId String
+  barber   Barber  @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  weekday  Int
+  startMin Int
+  endMin   Int
+  active   Boolean @default(true)
+
+  @@unique([barberId, weekday])
+}
+
+model TimeOff {
+  id       String   @id @default(cuid())
+  barberId String
+  barber   Barber   @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  startsAt DateTime
+  endsAt   DateTime
+  reason   String?
+
+  @@index([barberId, startsAt])
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String   @unique
+  email        String?
+  ghlContactId String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  appointments Appointment[]
+}
+
+model Appointment {
+  id            String   @id @default(cuid())
+  branchId      String
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  barberId      String
+  barber        Barber   @relation(fields: [barberId], references: [id])
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id])
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id])
+  startsAt      DateTime
+  endsAt        DateTime
+  status        String   @default("confirmed")
+  source        String   @default("web")
+  priceCents    Int
+  paymentStatus String   @default("unpaid")
+  notes         String?
+  manageToken   String   @unique
+  // Índice único parcial emulado (ver SPEC 4): "<barberId>|<startsAtISO>" mientras el
+  // slot está ocupado (confirmed/completed), NULL cuando se libera (cancelled/no_show).
+  // Garantiza que no existan dos citas confirmadas del mismo barbero en el mismo instante.
+  slotKey       String?  @unique
+  ghlEventId    String?  @unique
+  ghlSyncStatus String   @default("pending")
+  ghlSyncError  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([branchId, startsAt])
+  @@index([startsAt, status])
+  @@index([barberId, startsAt])
+}
+
+model GhlEvent {
+  id             String   @id @default(cuid())
+  ghlEventId     String   @unique
+  ghlCalendarId  String
+  ghlContactId   String?
+  assignedUserId String?
+  barberId       String?
+  title          String?
+  startsAt       DateTime
+  endsAt         DateTime
+  status         String   @default("confirmed")
+  origin         String   @default("web")
+  raw            String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([ghlCalendarId, startsAt])
+}
+
+model AdminSession {
+  token     String   @id
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}

@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# SQLite generado
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+prisma/*.db-journal
+
+.DS_Store
+npm-debug.log*
+.vercel
