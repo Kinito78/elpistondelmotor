@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 type Slot = { start: string; end: string; label: string; barberId: string };
 
@@ -20,7 +19,6 @@ export default function AppointmentActions({
   maxDate: string;
   currentDate: string;
 }) {
-  const router = useRouter();
 
   const [mode, setMode] = useState<"idle" | "cancel" | "reschedule">("idle");
   const [date, setDate] = useState(currentDate < today ? today : currentDate);
@@ -69,7 +67,9 @@ export default function AppointmentActions({
       }
       setMode("idle");
       setSelected(null);
-      router.refresh();
+      // Recarga dura: la página de la cita se renderiza en el servidor, así que
+      // el nuevo estado debe venir de una carga nueva.
+      window.location.reload();
       return true;
     } catch {
       setError("No se pudo conectar con el servidor");

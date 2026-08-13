@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function LoginForm({ next }: { next: string }) {
-  const router = useRouter();
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,8 +22,8 @@ export default function LoginForm({ next }: { next: string }) {
         setError("Credenciales inválidas");
         return;
       }
-      router.push(next.startsWith("/admin") ? next : "/admin");
-      router.refresh();
+      // Navegación dura: la cookie de sesión debe aplicarse en una carga nueva.
+      window.location.assign(next.startsWith("/admin") ? next : "/admin");
     } catch {
       setError("No se pudo conectar con el servidor");
     } finally {
