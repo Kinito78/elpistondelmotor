@@ -8,7 +8,7 @@
     "start": "next start -p 3000",
     "seed": "tsx prisma/seed.ts",
     "db:push": "prisma db push",
-    "db:reset": "prisma migrate reset --force --skip-generate && npm run seed",
+    "db:reset": "node scripts/reset-db.mjs",
     "setup": "npm install && prisma generate && prisma migrate deploy && npm run seed",
     "typecheck": "tsc --noEmit",
     "lint": "next lint"

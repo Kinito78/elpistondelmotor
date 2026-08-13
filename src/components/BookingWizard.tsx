@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 type Service = {
   id: string;
@@ -35,7 +34,6 @@ export default function BookingWizard({
   today: string;
   maxDate: string;
 }) {
-  const router = useRouter();
 
   const [step, setStep] = useState(1);
   const [services, setServices] = useState<Service[]>([]);
@@ -157,7 +155,9 @@ export default function BookingWizard({
       const data = await res.json().catch(() => ({}));
 
       if (res.status === 201 && data?.appointment?.manageToken) {
-        router.push(`/cita/${data.appointment.manageToken}?nuevo=1`);
+        // Navegación dura a propósito: la confirmación debe cargar siempre, sin
+        // depender de que la transición del router del cliente se complete.
+        window.location.assign(`/cita/${data.appointment.manageToken}?nuevo=1`);
         return;
       }
 
