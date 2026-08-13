@@ -1,0 +1,79 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function LoginForm({ next }: { next: string }) {
+  const router = useRouter();
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user, password }),
+      });
+      if (!res.ok) {
+        setError("Credenciales inválidas");
+        return;
+      }
+      router.push(next.startsWith("/admin") ? next : "/admin");
+      router.refresh();
+    } catch {
+      setError("No se pudo conectar con el servidor");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="card space-y-3" noValidate>
+      {error ? (
+        <p
+          data-testid="login-error"
+          role="alert"
+          className="rounded-lg border border-[#e5b5b0] bg-[#fdecea] px-3 py-2 text-sm font-medium text-[#8a231b]"
+        >
+          {error}
+        </p>
+      ) : null}
+      <div>
+        <label className="label" htmlFor="admin-user">
+          Usuario
+        </label>
+        <input
+          id="admin-user"
+          data-testid="admin-user"
+          className="input"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+          autoComplete="username"
+        />
+      </div>
+      <div>
+        <label className="label" htmlFor="admin-password">
+          Contraseña
+        </label>
+        <input
+          id="admin-password"
+          data-testid="admin-password"
+          type="password"
+          className="input"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
+        />
+      </div>
+      <button type="submit" data-testid="admin-login-submit" className="btn-primary" disabled={busy}>
+        {busy ? "Entrando…" : "Entrar"}
+      </button>
+    </form>
+  );
+}
