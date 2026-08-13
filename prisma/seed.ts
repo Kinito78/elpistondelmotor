@@ -3,7 +3,7 @@
  * Ver SPEC.md §5.8.
  */
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Customer, type Service } from "@prisma/client";
 import { createHash, randomUUID } from "crypto";
 import { fromZonedTime, formatInTimeZone } from "date-fns-tz";
 
@@ -85,7 +85,7 @@ async function main() {
     { name: "Corte infantil", durationMin: 30, priceCents: 18000, description: "Corte para niños menores de 12 años." },
   ];
 
-  const services = [];
+  const services: Service[] = [];
   for (let i = 0; i < serviceDefs.length; i++) {
     services.push(
       await prisma.service.create({
@@ -165,7 +165,7 @@ async function main() {
     { name: "Rosa Díaz", phone: "+525533334444", email: null },
     { name: "Pedro Ramos", phone: "+525544445555", email: null },
   ];
-  const customers = [];
+  const customers: Customer[] = [];
   for (const def of customerDefs) {
     customers.push(
       await prisma.customer.create({
