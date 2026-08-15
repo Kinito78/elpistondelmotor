@@ -107,9 +107,8 @@ async function main() {
   const byName = (name: string) => services.find((s) => s.name === name)!;
 
   const barberDefs = [
-    { name: "Miguel Ángel", ghlUserId: "mock-user-miguel", bio: "20 años de oficio. Especialista en corte clásico.", all: true },
-    { name: "Carlos Ruiz", ghlUserId: "mock-user-carlos", bio: "Fades, diseños y barba a navaja.", all: true },
-    { name: "Sofía Herrera", ghlUserId: "mock-user-sofia", bio: "Corte infantil y arreglo de barba.", all: false },
+    { name: "Miguel Angel Reynoso", ghlUserId: "gTeodi0p1Rysufm5mHfM", bio: "Corte clásico, fades y barba a navaja.", all: true },
+    { name: "Roberto Reynoso", ghlUserId: "s0UZfVUktK67pVayplDw", bio: "Corte, barba y afeitado clásico.", all: true },
   ];
 
   const barbers = [];
@@ -148,16 +147,15 @@ async function main() {
     barbers.push(barber);
   }
 
-  const miguel = barbers.find((b) => b.name === "Miguel Ángel")!;
-  const carlos = barbers.find((b) => b.name === "Carlos Ruiz")!;
-  const sofia = barbers.find((b) => b.name === "Sofía Herrera")!;
+  const miguelAngel = barbers.find((b) => b.name === "Miguel Angel Reynoso")!;
+  const roberto = barbers.find((b) => b.name === "Roberto Reynoso")!;
 
-  // TimeOff: Sofía libre el próximo lunes completo.
+  // TimeOff: Roberto libre el próximo lunes completo.
   const today = todayLocal();
   const monday = nextMonday(today);
   await prisma.timeOff.create({
     data: {
-      barberId: sofia.id,
+      barberId: roberto.id,
       startsAt: localToUtc(monday, 0, 0),
       endsAt: localToUtc(monday, 23, 59),
       reason: "Vacaciones",
@@ -203,7 +201,7 @@ async function main() {
   const seedAppointments: SeedAppt[] = [
     {
       token: "seed-token-1",
-      barberId: miguel.id,
+      barberId: miguelAngel.id,
       serviceName: "Corte clásico",
       date: D,
       hour: 10,
@@ -214,7 +212,7 @@ async function main() {
     },
     {
       token: "seed-token-2",
-      barberId: carlos.id,
+      barberId: roberto.id,
       serviceName: "Corte + barba",
       date: D,
       hour: 12,
@@ -226,7 +224,7 @@ async function main() {
     {
       // Cita completada que alimenta los reportes ($250.00).
       token: "seed-token-3",
-      barberId: miguel.id,
+      barberId: miguelAngel.id,
       serviceName: "Corte clásico",
       date: yesterday,
       hour: 11,
@@ -239,7 +237,7 @@ async function main() {
     {
       // Cita completada que alimenta los reportes ($180.00).
       token: "seed-token-4",
-      barberId: sofia.id,
+      barberId: roberto.id,
       serviceName: "Corte infantil",
       date: threeDaysAgo,
       hour: 16,
@@ -251,7 +249,7 @@ async function main() {
     },
     {
       token: "seed-token-5",
-      barberId: carlos.id,
+      barberId: roberto.id,
       serviceName: "Afeitado con navaja",
       date: twoDaysAgo,
       hour: 15,
@@ -316,7 +314,7 @@ async function main() {
   console.log(`  Servicios: ${services.length}`);
   console.log(`  Barberos:  ${barbers.length}`);
   console.log(`  Citas:     ${seedAppointments.length} (día hábil de referencia: ${D})`);
-  console.log(`  Sofía libre: ${monday}`);
+  console.log(`  Roberto libre: ${monday}`);
 }
 
 main()
