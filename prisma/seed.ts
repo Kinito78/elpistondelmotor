@@ -4,7 +4,7 @@
  */
 import "dotenv/config";
 import { PrismaClient, type Customer, type Service } from "@prisma/client";
-import { createHash, randomUUID } from "crypto";
+import { createHash, randomBytes, randomUUID, scryptSync } from "crypto";
 import { fromZonedTime, formatInTimeZone } from "date-fns-tz";
 
 const prisma = new PrismaClient();
@@ -12,6 +12,13 @@ const prisma = new PrismaClient();
 const TZ = process.env.BUSINESS_TIMEZONE || "America/Mexico_City";
 const BUSINESS_NAME = process.env.BUSINESS_NAME || "Barbería La Navaja";
 const CALENDAR_ID = "mock-calendar-1";
+
+/** Mismo esquema `salt:hash` (scrypt) que `src/lib/password.ts`. */
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -74,6 +81,10 @@ async function main() {
       phone: "+525555555555",
       ghlLocationId: null,
       ghlCalendarId: CALENDAR_ID,
+      slug: "la-navaja",
+      adminUser: "admin",
+      adminPasswordHash: hashPassword("barberia123"),
+      ghlWebhookSecret: "dev-webhook-secret",
     },
   });
 

@@ -110,7 +110,7 @@ export async function computeAvailability(input: AvailabilityInput): Promise<Ava
   }
 
   // Ocupados según el calendario externo (GHL): en modo mock, la tabla GhlEvent.
-  const ghl = getGhlClient();
+  const ghl = getGhlClient(branch);
   const busyByBarber = new Map<string, Interval[]>();
   await Promise.all(
     barbers.map(async (barber) => {

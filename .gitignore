@@ -14,3 +14,6 @@ prisma/*.db-journal
 .DS_Store
 npm-debug.log*
 .vercel
+
+.env
+.env.local

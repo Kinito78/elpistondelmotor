@@ -68,6 +68,25 @@ export const barberSchema = z.object({
 
 export const barberUpdateSchema = barberSchema.partial();
 
+export const loyaltySettingsSchema = z.object({
+  cutsRequired: z.number().int("Debe ser un número entero").min(1).max(50).optional(),
+  rewardCents: z.number().int("Debe ser un número entero").min(0).optional(),
+  windowDays: z.number().int("Debe ser un número entero").min(1).max(90).optional(),
+});
+
+export const loyaltyManualVisitSchema = z.object({
+  name: z.string().trim().min(2, "El nombre es obligatorio").max(80),
+  phone: z
+    .string({ required_error: "Teléfono inválido" })
+    .trim()
+    .refine((v) => countDigits(v) >= 10, "Teléfono inválido")
+    .refine((v) => countDigits(v) <= 15, "Teléfono inválido"),
+});
+
+export const loyaltyRedeemSchema = z.object({
+  customerId: z.string().min(1, "Selecciona un cliente"),
+});
+
 export const scheduleSchema = z.object({
   hours: z
     .array(

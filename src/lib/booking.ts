@@ -6,6 +6,7 @@ import { env } from "./env";
 import { HttpError, notFound, slotTaken } from "./errors";
 import { getGhlClient } from "./ghl/client";
 import { normalizePhone } from "./format";
+import { createPendingVisit } from "./loyalty";
 import { toLocalDateString } from "./time";
 import { createAppointmentSchema, zodFields } from "./validation";
 
@@ -123,7 +124,7 @@ export async function syncAppointmentToGhl(appointmentId: string): Promise<void>
   });
   if (!appointment) return;
 
-  const ghl = getGhlClient();
+  const ghl = getGhlClient(appointment.branch);
   const calendarId = appointment.barber.ghlCalendarId || appointment.branch.ghlCalendarId;
 
   try {
@@ -221,7 +222,8 @@ export async function cancelBooking(
 
   if (appointment.ghlEventId) {
     try {
-      await getGhlClient().cancelAppointment({ ghlEventId: appointment.ghlEventId });
+      const branch = await prisma.branch.findUniqueOrThrow({ where: { id: appointment.branchId } });
+      await getGhlClient(branch).cancelAppointment({ ghlEventId: appointment.ghlEventId });
       await prisma.appointment.update({
         where: { id: appointment.id },
         data: { ghlSyncStatus: "synced", ghlSyncError: null },
@@ -284,7 +286,8 @@ export async function rescheduleBooking(
 
   if (appointment.ghlEventId) {
     try {
-      await getGhlClient().updateAppointment({
+      const branch = await prisma.branch.findUniqueOrThrow({ where: { id: appointment.branchId } });
+      await getGhlClient(branch).updateAppointment({
         ghlEventId: appointment.ghlEventId,
         startsAt,
         endsAt,
@@ -335,10 +338,22 @@ export async function setAppointmentStatus(
 
   if (status === "cancelled" && appointment.ghlEventId) {
     try {
-      await getGhlClient().cancelAppointment({ ghlEventId: appointment.ghlEventId });
+      const branch = await prisma.branch.findUniqueOrThrow({ where: { id: appointment.branchId } });
+      await getGhlClient(branch).cancelAppointment({ ghlEventId: appointment.ghlEventId });
     } catch (err) {
       console.error("[GHL] cancelación (admin) fallida:", err);
     }
+  }
+
+  // Alta automática de fidelidad: una visita pendiente por cita completada,
+  // solo al transicionar (evita duplicar si ya estaba completada).
+  if (status === "completed" && appointment.status !== "completed") {
+    await createPendingVisit({
+      branchId: appointment.branchId,
+      customerId: appointment.customerId,
+      appointmentId: appointment.id,
+      source: "auto",
+    });
   }
 
   return updated;

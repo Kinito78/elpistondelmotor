@@ -1,20 +1,78 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #14110f;
-  --paper: #f7f4ef;
-  --brand: #b08542;
+  --bg: #17130F;
+  --surface: #211B15;
+  --surface-2: #2A2119;
+  --border: #3A2E20;
+  --border-strong: #4A3B29;
+  --text-primary: #EDE3D3;
+  --text-secondary: #C9BBA4;
+  --text-muted: #9C8A6F;
+  --brand: #C9A227;
+  --brand-hover: #B8931F;
+  --brand-ink: #1C1712;
+  --danger: #8B2635;
+  --danger-hover: #6E1E2A;
+  --font-display: Rockwell, "Roboto Slab", "Sitka Small", Georgia, serif;
 }
 
 html,
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+/* Marca: logotipo con tipografía de letrero de barbería. */
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+/* Insignia circular tipo poste de barbería, para la marca y acentos. */
+.pole-mark {
+  display: inline-block;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 2px solid var(--brand);
+  background: repeating-linear-gradient(
+    45deg,
+    #8b2635 0 6px,
+    #ede3d3 6px 12px,
+    #2a4a6e 12px 18px
+  );
+}
+
+/* Panel con veta de madera: reservado para el hero, no se repite en toda la UI. */
+.wood-panel {
+  background-image: repeating-linear-gradient(
+      115deg,
+      rgba(0, 0, 0, 0.16) 0px,
+      rgba(0, 0, 0, 0.16) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    linear-gradient(160deg, #241a10 0%, #1c130c 100%);
+  border: 1px solid #4a3323;
 }
 
 /* Utilidades propias (Tailwind 4: `@utility` para poder usarlas y componerlas). */
@@ -24,29 +82,29 @@ body {
 
 @utility btn-primary {
   @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors;
-  @apply bg-[#14110f] text-white hover:bg-[#2c2621];
+  @apply bg-[#C9A227] text-[#1C1712] hover:bg-[#B8931F];
 }
 
 @utility btn-secondary {
   @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors;
-  @apply border border-[#d8cfc0] bg-white text-[#14110f] hover:bg-[#f2ece2];
+  @apply border border-[#4A3B29] bg-[#211B15] text-[#EDE3D3] hover:bg-[#2A2119];
 }
 
 @utility btn-danger {
   @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors;
-  @apply bg-[#a32c22] text-white hover:bg-[#8a231b];
+  @apply bg-[#8B2635] text-[#EDE3D3] hover:bg-[#6E1E2A];
 }
 
 @utility card {
-  @apply rounded-xl border border-[#e2d9c9] bg-white p-4 shadow-sm;
+  @apply rounded-xl border border-[#3A2E20] bg-[#211B15] p-4;
 }
 
 @utility input {
-  @apply w-full rounded-lg border border-[#d8cfc0] bg-white px-3 py-2 text-sm outline-none focus:border-[#b08542];
+  @apply w-full rounded-lg border border-[#4A3B29] bg-[#2A2119] px-3 py-2 text-sm text-[#EDE3D3] outline-none focus:border-[#C9A227];
 }
 
 @utility label {
-  @apply mb-1 block text-sm font-medium text-[#4a423a];
+  @apply mb-1 block text-sm font-medium text-[#C9BBA4];
 }
 
 @utility badge {
@@ -62,9 +120,9 @@ button:disabled {
 }
 
 .table th {
-  @apply border-b border-[#e2d9c9] px-3 py-2 font-semibold text-[#4a423a];
+  @apply border-b border-[#3A2E20] px-3 py-2 font-semibold text-[#C9BBA4];
 }
 
 .table td {
-  @apply border-b border-[#efe8dc] px-3 py-2 align-middle;
+  @apply border-b border-[#2A2119] px-3 py-2 align-middle;
 }

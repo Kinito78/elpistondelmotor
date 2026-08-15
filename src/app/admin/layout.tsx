@@ -9,6 +9,7 @@ const NAV = [
   { href: "/admin/citas", label: "Citas" },
   { href: "/admin/servicios", label: "Servicios" },
   { href: "/admin/barberos", label: "Barberos" },
+  { href: "/admin/fidelidad", label: "Fidelidad" },
   { href: "/admin/reportes", label: "Reportes" },
 ];
 
@@ -18,12 +19,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="space-y-6">
       {session ? (
-        <nav className="flex flex-wrap items-center gap-2 border-b border-[#e2d9c9] pb-3">
+        <nav className="flex flex-wrap items-center gap-2 border-b border-[#3A2E20] pb-3">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-[#efe8dc]"
+              className="rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-[#2A2119]"
             >
               {item.label}
             </Link>

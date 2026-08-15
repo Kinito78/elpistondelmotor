@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
 import { apiOk, readJson } from "@/lib/api";
-import { getActiveBranch, prisma } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
-import { HttpError } from "@/lib/errors";
+import { HttpError, notFound } from "@/lib/errors";
 import { normalizePhone } from "@/lib/format";
 import { withApi } from "@/lib/handler";
 import { slotKeyFor } from "@/lib/booking";
@@ -13,11 +13,19 @@ export const dynamic = "force-dynamic";
 /**
  * Webhook entrante de GHL: refleja en la base local las citas creadas fuera del
  * sitio (por ejemplo por el bot de WhatsApp). Idempotente por `appointment.id`.
+ *
+ * La sucursal se identifica por el slug en la URL (no por dominio): GHL llama
+ * a esta ruta servidor-a-servidor, así que cada sucursal configura su propia
+ * URL de workflow con su slug, ej. `/api/ghl/webhook/la-navaja`.
  */
-export async function POST(req: Request) {
+export async function POST(req: Request, ctx: { params: Promise<{ slug: string }> }) {
   return withApi(async () => {
+    const { slug } = await ctx.params;
+    const branch = await prisma.branch.findUnique({ where: { slug } });
+    if (!branch) throw notFound("Sucursal no encontrada");
+
     const secret = req.headers.get("x-ghl-webhook-secret");
-    if (!secret || secret !== env.GHL_WEBHOOK_SECRET) {
+    if (!secret || !branch.ghlWebhookSecret || secret !== branch.ghlWebhookSecret) {
       throw new HttpError(401, "UNAUTHORIZED", "Secreto de webhook inválido");
     }
 
@@ -27,7 +35,6 @@ export async function POST(req: Request) {
     }
     const { type, appointment: evt, contact } = parsed.data;
 
-    const branch = await getActiveBranch();
     const calendarId = evt.calendarId || branch.ghlCalendarId || "mock-calendar-1";
 
     if (type === "AppointmentDelete") {

@@ -163,7 +163,7 @@ export default function AppointmentsManager({
       </section>
 
       {error ? (
-        <p data-testid="admin-error" role="alert" className="rounded-lg border border-[#e5b5b0] bg-[#fdecea] px-3 py-2 text-sm text-[#8a231b]">
+        <p data-testid="admin-error" role="alert" className="rounded-lg border border-[#6B2A24] bg-[#2E1613] px-3 py-2 text-sm text-[#E2897E]">
           {error}
         </p>
       ) : null}
@@ -197,13 +197,13 @@ export default function AppointmentsManager({
                   <td>{fmtDateTime(a.startsAt, timezone)}</td>
                   <td>
                     <span data-testid="row-customer-name">{a.customer.name}</span>
-                    <span data-testid="row-customer-phone" className="block text-xs text-[#6b6157]">
+                    <span data-testid="row-customer-phone" className="block text-xs text-[#9C8A6F]">
                       {a.customer.phone}
                     </span>
                   </td>
                   <td>
                     {a.service.name}
-                    <span className="block text-xs text-[#6b6157]">{a.priceLabel}</span>
+                    <span className="block text-xs text-[#9C8A6F]">{a.priceLabel}</span>
                   </td>
                   <td>{a.barber.name}</td>
                   <td>{a.source}</td>
@@ -214,7 +214,7 @@ export default function AppointmentsManager({
                         type="button"
                         data-testid="sync-warning"
                         title={a.ghlSyncError ?? ""}
-                        className="ml-2 badge bg-[#f6ecd9] text-[#7a5a15]"
+                        className="ml-2 badge bg-[#3A2C12] text-[#E0B95E]"
                         onClick={() => patch(a.id, { action: "resync" })}
                       >
                         Sin sincronizar · reintentar
@@ -225,7 +225,7 @@ export default function AppointmentsManager({
                     <button
                       type="button"
                       data-testid="toggle-paid"
-                      className="badge border border-[#d8cfc0] bg-white"
+                      className="badge border border-[#4A3B29] bg-[#211B15]"
                       onClick={() =>
                         patch(a.id, {
                           paymentStatus: a.paymentStatus === "paid_onsite" ? "unpaid" : "paid_onsite",
@@ -240,7 +240,7 @@ export default function AppointmentsManager({
                       <button
                         type="button"
                         data-testid="status-completed"
-                        className="badge border border-[#d8cfc0] bg-white"
+                        className="badge border border-[#4A3B29] bg-[#211B15]"
                         onClick={() => patch(a.id, { status: "completed" })}
                       >
                         Completada
@@ -248,7 +248,7 @@ export default function AppointmentsManager({
                       <button
                         type="button"
                         data-testid="status-no-show"
-                        className="badge border border-[#d8cfc0] bg-white"
+                        className="badge border border-[#4A3B29] bg-[#211B15]"
                         onClick={() => patch(a.id, { status: "no_show" })}
                       >
                         No asistió
@@ -256,7 +256,7 @@ export default function AppointmentsManager({
                       <button
                         type="button"
                         data-testid="status-cancelled"
-                        className="badge border border-[#d8cfc0] bg-white"
+                        className="badge border border-[#4A3B29] bg-[#211B15]"
                         onClick={() => patch(a.id, { status: "cancelled" })}
                       >
                         Cancelada

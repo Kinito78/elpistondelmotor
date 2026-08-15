@@ -1,19 +1,21 @@
 import { randomUUID } from "crypto";
 import { cookies } from "next/headers";
-import { prisma } from "./db";
-import { env } from "./env";
+import { getActiveBranch, prisma } from "./db";
 import { HttpError } from "./errors";
+import { verifyPassword } from "./password";
 
 export const ADMIN_COOKIE = "barber_admin";
 const SESSION_HOURS = 12;
 
+/** Login contra las credenciales de la sucursal resuelta por dominio (no globales). */
 export async function createAdminSession(user: string, password: string) {
-  if (user !== env.ADMIN_USER || password !== env.ADMIN_PASSWORD) {
+  const branch = await getActiveBranch();
+  if (user !== branch.adminUser || !verifyPassword(password, branch.adminPasswordHash)) {
     throw new HttpError(401, "INVALID_CREDENTIALS", "Credenciales inválidas");
   }
   const token = randomUUID();
   const expiresAt = new Date(Date.now() + SESSION_HOURS * 60 * 60 * 1000);
-  await prisma.adminSession.create({ data: { token, expiresAt } });
+  await prisma.adminSession.create({ data: { token, branchId: branch.id, expiresAt } });
   // Limpieza oportunista de sesiones vencidas.
   await prisma.adminSession.deleteMany({ where: { expiresAt: { lt: new Date() } } });
   return { token, expiresAt };

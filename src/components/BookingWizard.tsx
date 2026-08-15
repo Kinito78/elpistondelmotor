@@ -193,11 +193,16 @@ export default function BookingWizard({
         <ol className="flex flex-wrap gap-2 text-xs font-semibold">
           {steps.map((label, index) => {
             const n = index + 1;
-            const state = n === step ? "bg-[#14110f] text-white" : n < step ? "bg-[#e5dccb]" : "bg-white";
+            const state =
+              n === step
+                ? "bg-[#C9A227] text-[#1C1712]"
+                : n < step
+                  ? "bg-[#3A2A12] text-[#EDE3D3]"
+                  : "bg-transparent";
             return (
               <li
                 key={label}
-                className={`rounded-full border border-[#e2d9c9] px-3 py-1 ${state}`}
+                className={`rounded-full border border-[#3A2E20] px-3 py-1 ${state}`}
                 data-testid={`wizard-step-${n}`}
                 data-active={n === step ? "true" : "false"}
               >
@@ -214,7 +219,7 @@ export default function BookingWizard({
                 key={`${message}-${i}`}
                 data-testid="form-error"
                 role="alert"
-                className="rounded-lg border border-[#e5b5b0] bg-[#fdecea] px-3 py-2 text-sm font-medium text-[#8a231b]"
+                className="rounded-lg border border-[#6B2A24] bg-[#2E1613] px-3 py-2 text-sm font-medium text-[#E2897E]"
               >
                 {message}
               </p>
@@ -233,14 +238,14 @@ export default function BookingWizard({
                   data-testid="service-card"
                   data-service-id={s.id}
                   onClick={() => chooseService(s)}
-                  className="card text-left hover:border-[#b08542]"
+                  className="card text-left hover:border-[#C9A227]"
                 >
                   <span className="block text-base font-semibold">{s.name}</span>
                   {s.description ? (
-                    <span className="mt-1 block text-sm text-[#6b6157]">{s.description}</span>
+                    <span className="mt-1 block text-sm text-[#9C8A6F]">{s.description}</span>
                   ) : null}
                   <span className="mt-3 flex items-baseline justify-between">
-                    <span className="text-sm text-[#6b6157]">{s.durationMin} min</span>
+                    <span className="text-sm text-[#9C8A6F]">{s.durationMin} min</span>
                     <span className="font-bold">{formatPrice(s.priceCents)}</span>
                   </span>
                 </button>
@@ -258,10 +263,10 @@ export default function BookingWizard({
                 data-testid="barber-any"
                 data-barber-id={ANY}
                 onClick={() => chooseBarber(ANY, "Cualquier barbero disponible")}
-                className="card text-left hover:border-[#b08542]"
+                className="card text-left hover:border-[#C9A227]"
               >
                 <span className="block text-base font-semibold">Cualquier barbero disponible</span>
-                <span className="mt-1 block text-sm text-[#6b6157]">
+                <span className="mt-1 block text-sm text-[#9C8A6F]">
                   Te asignamos al barbero con mayor disponibilidad.
                 </span>
               </button>
@@ -272,10 +277,10 @@ export default function BookingWizard({
                   data-testid="barber-card"
                   data-barber-id={b.id}
                   onClick={() => chooseBarber(b.id, b.name)}
-                  className="card text-left hover:border-[#b08542]"
+                  className="card text-left hover:border-[#C9A227]"
                 >
                   <span className="block text-base font-semibold">{b.name}</span>
-                  {b.bio ? <span className="mt-1 block text-sm text-[#6b6157]">{b.bio}</span> : null}
+                  {b.bio ? <span className="mt-1 block text-sm text-[#9C8A6F]">{b.bio}</span> : null}
                 </button>
               ))}
             </div>
@@ -307,13 +312,13 @@ export default function BookingWizard({
 
             <div className="mt-4">
               {loadingSlots ? (
-                <p data-testid="slots-loading" className="text-sm text-[#6b6157]">
+                <p data-testid="slots-loading" className="text-sm text-[#9C8A6F]">
                   Buscando horarios disponibles…
                 </p>
               ) : slots.length === 0 ? (
                 <p
                   data-testid="no-slots"
-                  className="rounded-lg border border-[#e2d9c9] bg-white px-3 py-2 text-sm"
+                  className="rounded-lg border border-[#3A2E20] bg-[#211B15] px-3 py-2 text-sm"
                 >
                   No hay horarios disponibles para este día
                 </p>
@@ -411,7 +416,7 @@ export default function BookingWizard({
                   {submitting ? "Reservando…" : "Confirmar reserva"}
                 </button>
               </div>
-              <p className="text-xs text-[#6b6157]">
+              <p className="text-xs text-[#9C8A6F]">
                 No se cobra nada en línea. El pago es en el local.
               </p>
             </form>
@@ -420,22 +425,22 @@ export default function BookingWizard({
       </div>
 
       <aside className="card h-fit" data-testid="booking-summary">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-[#6b6157]">Tu reserva</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wide text-[#9C8A6F]">Tu reserva</h2>
         <dl className="mt-3 space-y-2 text-sm">
           <div>
-            <dt className="text-[#6b6157]">Servicio</dt>
+            <dt className="text-[#9C8A6F]">Servicio</dt>
             <dd data-testid="summary-service" className="font-semibold">
               {service ? `${service.name} · ${formatPrice(service.priceCents)}` : "—"}
             </dd>
           </div>
           <div>
-            <dt className="text-[#6b6157]">Barbero</dt>
+            <dt className="text-[#9C8A6F]">Barbero</dt>
             <dd data-testid="summary-barber" className="font-semibold">
               {barberId ? barberName : "—"}
             </dd>
           </div>
           <div>
-            <dt className="text-[#6b6157]">Fecha y hora</dt>
+            <dt className="text-[#9C8A6F]">Fecha y hora</dt>
             <dd data-testid="summary-slot" className="font-semibold">
               {slot ? `${date} ${slot.label}` : "—"}
             </dd>

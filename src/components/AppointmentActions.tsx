@@ -85,7 +85,7 @@ export default function AppointmentActions({
         <p
           data-testid="action-error"
           role="alert"
-          className="rounded-lg border border-[#e5b5b0] bg-[#fdecea] px-3 py-2 text-sm font-medium text-[#8a231b]"
+          className="rounded-lg border border-[#6B2A24] bg-[#2E1613] px-3 py-2 text-sm font-medium text-[#E2897E]"
         >
           {error}
         </p>
@@ -139,7 +139,7 @@ export default function AppointmentActions({
           </div>
 
           {loadingSlots ? (
-            <p data-testid="slots-loading" className="text-sm text-[#6b6157]">
+            <p data-testid="slots-loading" className="text-sm text-[#9C8A6F]">
               Buscando horarios disponibles…
             </p>
           ) : slots.length === 0 ? (
@@ -157,7 +157,7 @@ export default function AppointmentActions({
                   onClick={() => setSelected(s)}
                   className={
                     selected?.start === s.start
-                      ? "btn bg-[#b08542] text-white"
+                      ? "btn bg-[#C9A227] text-[#1C1712]"
                       : "btn-secondary"
                   }
                   aria-pressed={selected?.start === s.start}
@@ -181,9 +181,9 @@ export default function AppointmentActions({
       ) : null}
 
       {mode === "cancel" ? (
-        <section data-testid="cancel-modal" className="card space-y-3 border-[#e5b5b0]">
+        <section data-testid="cancel-modal" className="card space-y-3 border-[#6B2A24]">
           <h3 className="font-bold">¿Seguro que quieres cancelar tu cita?</h3>
-          <p className="text-sm text-[#6b6157]">
+          <p className="text-sm text-[#9C8A6F]">
             Esta acción libera tu horario y no se puede deshacer.
           </p>
           <div className="flex gap-2">

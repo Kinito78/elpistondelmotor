@@ -13,13 +13,37 @@ model Branch {
   timezone      String   @default("America/Mexico_City")
   address       String?
   phone         String?
-  ghlLocationId String?
-  ghlCalendarId String?
   createdAt     DateTime @default(now())
 
-  barbers      Barber[]
-  services     Service[]
-  appointments Appointment[]
+  // Multi-tenant: identifica la sucursal por dominio propio o por subdominio
+  // (slug). Ambos únicos y opcionales para no romper el modo single-tenant
+  // de hoy (una sola fila, sin dominio configurado → siempre es "la activa").
+  slug   String? @unique
+  domain String? @unique
+
+  // Login del panel admin, uno por sucursal. La contraseña se guarda hasheada
+  // (scrypt), nunca en texto plano.
+  adminUser         String  @default("admin")
+  adminPasswordHash String
+
+  // Credenciales de GHL por sucursal (antes vivían en variables de entorno
+  // globales; cada barbería conecta su propia sub-cuenta).
+  ghlApiKey        String?
+  ghlLocationId    String?
+  ghlCalendarId    String?
+  ghlWebhookSecret String?
+
+  // Programa de fidelidad: cada tantos cortes confirmados, un descuento en pesos.
+  loyaltyCutsRequired Int @default(5)
+  loyaltyRewardCents  Int @default(20000)
+  loyaltyWindowDays   Int @default(5)
+
+  barbers            Barber[]
+  services           Service[]
+  appointments       Appointment[]
+  loyaltyVisits      LoyaltyVisit[]
+  loyaltyRedemptions LoyaltyRedemption[]
+  adminSessions      AdminSession[]
 }
 
 model Service {
@@ -103,7 +127,9 @@ model Customer {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  appointments Appointment[]
+  appointments       Appointment[]
+  loyaltyVisits      LoyaltyVisit[]
+  loyaltyRedemptions LoyaltyRedemption[]
 }
 
 model Appointment {
@@ -134,9 +160,55 @@ model Appointment {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  loyaltyVisit LoyaltyVisit?
+
   @@index([branchId, startsAt])
   @@index([startsAt, status])
   @@index([barberId, startsAt])
+}
+
+model LoyaltyVisit {
+  id            String   @id @default(cuid())
+  branchId      String
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id])
+  appointmentId String?  @unique
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+
+  // "auto" (se crea al marcar una cita como completada) o "manual" (el barbero
+  // registra un corte pagado fuera de la app, ej. efectivo sin reserva).
+  source String
+
+  // "pending" (esperando confirmación por WhatsApp) → "confirmed" (cuenta para
+  // el premio) o "expired" (no se confirmó dentro de la ventana).
+  status       String   @default("pending")
+  confirmToken String   @unique
+  createdAt    DateTime @default(now())
+  confirmedAt  DateTime?
+  expiresAt    DateTime
+
+  // Si no es null, esta visita ya se usó para canjear un descuento y no vuelve
+  // a contar en el progreso hacia el próximo.
+  redemptionId String?
+  redemption   LoyaltyRedemption? @relation(fields: [redemptionId], references: [id])
+
+  @@index([customerId, branchId, status])
+}
+
+model LoyaltyRedemption {
+  id            String   @id @default(cuid())
+  branchId      String
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id])
+  cutsUsed      Int
+  discountCents Int
+  createdAt     DateTime @default(now())
+
+  visits LoyaltyVisit[]
+
+  @@index([customerId, branchId])
 }
 
 model GhlEvent {
@@ -160,6 +232,10 @@ model GhlEvent {
 
 model AdminSession {
   token     String   @id
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
   createdAt DateTime @default(now())
   expiresAt DateTime
+
+  @@index([branchId])
 }

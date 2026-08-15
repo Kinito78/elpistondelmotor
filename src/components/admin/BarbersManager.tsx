@@ -216,12 +216,12 @@ export default function BarbersManager({
   return (
     <div className="space-y-6">
       {error ? (
-        <p data-testid="admin-error" role="alert" className="rounded-lg border border-[#e5b5b0] bg-[#fdecea] px-3 py-2 text-sm text-[#8a231b]">
+        <p data-testid="admin-error" role="alert" className="rounded-lg border border-[#6B2A24] bg-[#2E1613] px-3 py-2 text-sm text-[#E2897E]">
           {error}
         </p>
       ) : null}
       {notice ? (
-        <p data-testid="admin-notice" className="rounded-lg border border-[#bcd9b6] bg-[#e4f0e2] px-3 py-2 text-sm text-[#2f6b28]">
+        <p data-testid="admin-notice" className="rounded-lg border border-[#355C2E] bg-[#1B2A17] px-3 py-2 text-sm text-[#9BCB86]">
           {notice}
         </p>
       ) : null}
@@ -236,7 +236,7 @@ export default function BarbersManager({
               data-testid="barber-item"
               data-barber-id={b.id}
               aria-pressed={b.id === selectedId}
-              className={b.id === selectedId ? "btn bg-[#14110f] text-white" : "btn-secondary"}
+              className={b.id === selectedId ? "btn bg-[#C9A227] text-[#1C1712]" : "btn-secondary"}
               onClick={() => setSelectedId(b.id)}
             >
               {b.name}
@@ -331,7 +331,7 @@ export default function BarbersManager({
                   key={h.weekday}
                   data-testid={`schedule-row-${h.weekday}`}
                   data-weekday={h.weekday}
-                  className="flex flex-wrap items-center gap-3 rounded-lg border border-[#efe8dc] px-3 py-2"
+                  className="flex flex-wrap items-center gap-3 rounded-lg border border-[#2A2119] px-3 py-2"
                 >
                   <span className="w-24 text-sm font-semibold">{WEEKDAYS[h.weekday]}</span>
                   <label className="flex items-center gap-2 text-sm">
@@ -441,7 +441,7 @@ export default function BarbersManager({
 
             <ul className="space-y-1 text-sm" data-testid="timeoff-list">
               {selected.timeOff.length === 0 ? (
-                <li className="text-[#6b6157]">Sin días libres registrados.</li>
+                <li className="text-[#9C8A6F]">Sin días libres registrados.</li>
               ) : (
                 selected.timeOff.map((t) => (
                   <li key={t.id} data-testid="timeoff-item" className="flex items-center gap-3">
@@ -452,7 +452,7 @@ export default function BarbersManager({
                     <button
                       type="button"
                       data-testid="timeoff-delete"
-                      className="badge border border-[#d8cfc0] bg-white"
+                      className="badge border border-[#4A3B29] bg-[#211B15]"
                       onClick={() => removeTimeOff(t.id)}
                     >
                       Eliminar

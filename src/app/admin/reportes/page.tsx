@@ -44,7 +44,7 @@ export default async function AdminReportesPage({
 
       <section className="grid gap-4 sm:grid-cols-2">
         <div className="card">
-          <p className="text-xs uppercase tracking-wide text-[#6b6157]">
+          <p className="text-xs uppercase tracking-wide text-[#9C8A6F]">
             Ingresos del periodo (citas completadas)
           </p>
           <p data-testid="report-total-revenue" className="mt-1 text-3xl font-black">
@@ -52,7 +52,7 @@ export default async function AdminReportesPage({
           </p>
         </div>
         <div className="card">
-          <p className="text-xs uppercase tracking-wide text-[#6b6157]">Citas completadas</p>
+          <p className="text-xs uppercase tracking-wide text-[#9C8A6F]">Citas completadas</p>
           <p data-testid="report-total-appointments" className="mt-1 text-3xl font-black">
             {sales.totalAppointments}
           </p>

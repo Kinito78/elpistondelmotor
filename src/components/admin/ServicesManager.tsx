@@ -107,7 +107,7 @@ export default function ServicesManager() {
   return (
     <div className="space-y-6">
       {error ? (
-        <p data-testid="admin-error" role="alert" className="rounded-lg border border-[#e5b5b0] bg-[#fdecea] px-3 py-2 text-sm text-[#8a231b]">
+        <p data-testid="admin-error" role="alert" className="rounded-lg border border-[#6B2A24] bg-[#2E1613] px-3 py-2 text-sm text-[#E2897E]">
           {error}
         </p>
       ) : null}

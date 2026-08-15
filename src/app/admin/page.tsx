@@ -56,24 +56,24 @@ export default async function AdminDashboard() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-3xl font-black tracking-tight">Dashboard</h1>
-        <span className="text-sm text-[#6b6157]">{today}</span>
+        <span className="text-sm text-[#9C8A6F]">{today}</span>
       </div>
 
       <section className="grid gap-4 sm:grid-cols-3">
         <div className="card">
-          <p className="text-xs uppercase tracking-wide text-[#6b6157]">Citas de hoy</p>
+          <p className="text-xs uppercase tracking-wide text-[#9C8A6F]">Citas de hoy</p>
           <p data-testid="kpi-citas-hoy" className="mt-1 text-3xl font-black">
             {activeToday.length}
           </p>
         </div>
         <div className="card">
-          <p className="text-xs uppercase tracking-wide text-[#6b6157]">Ingresos de hoy</p>
+          <p className="text-xs uppercase tracking-wide text-[#9C8A6F]">Ingresos de hoy</p>
           <p data-testid="kpi-ingresos-hoy" className="mt-1 text-3xl font-black">
             {formatMoney(revenueToday)}
           </p>
         </div>
         <div className="card">
-          <p className="text-xs uppercase tracking-wide text-[#6b6157]">Ocupación de hoy</p>
+          <p className="text-xs uppercase tracking-wide text-[#9C8A6F]">Ocupación de hoy</p>
           <p data-testid="kpi-ocupacion-hoy" className="mt-1 text-3xl font-black">
             {occupancyToday}%
           </p>
@@ -83,7 +83,7 @@ export default async function AdminDashboard() {
       <section>
         <h2 className="mb-3 text-xl font-bold">Agenda de hoy</h2>
         {todayAppointments.length === 0 ? (
-          <p data-testid="today-empty" className="card text-sm text-[#6b6157]">
+          <p data-testid="today-empty" className="card text-sm text-[#9C8A6F]">
             No hay citas para hoy.
           </p>
         ) : (
@@ -105,7 +105,7 @@ export default async function AdminDashboard() {
                     <td>{labelHHmm(a.startsAt)}</td>
                     <td>
                       {a.customer.name}
-                      <span className="block text-xs text-[#6b6157]">{a.customer.phone}</span>
+                      <span className="block text-xs text-[#9C8A6F]">{a.customer.phone}</span>
                     </td>
                     <td>{a.service.name}</td>
                     <td>{a.barber.name}</td>
@@ -116,7 +116,7 @@ export default async function AdminDashboard() {
                         <span
                           data-testid="sync-warning"
                           title={a.ghlSyncError ?? ""}
-                          className="ml-2 badge bg-[#f6ecd9] text-[#7a5a15]"
+                          className="ml-2 badge bg-[#3A2C12] text-[#E0B95E]"
                         >
                           Sin sincronizar
                         </span>
@@ -155,7 +155,7 @@ export default async function AdminDashboard() {
                     <td>{labelShort(a.startsAt)}</td>
                     <td>
                       {a.customer.name}
-                      <span className="block text-xs text-[#6b6157]">{a.customer.phone}</span>
+                      <span className="block text-xs text-[#9C8A6F]">{a.customer.phone}</span>
                     </td>
                     <td>{a.service.name}</td>
                     <td>{a.barber.name}</td>

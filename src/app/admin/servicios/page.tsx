@@ -8,7 +8,7 @@ export default async function AdminServiciosPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-black tracking-tight">Servicios</h1>
-      <p className="text-sm text-[#6b6157]">
+      <p className="text-sm text-[#9C8A6F]">
         Los servicios desactivados dejan de ofrecerse en el sitio público. Nunca se borran si tienen
         citas históricas.
       </p>
