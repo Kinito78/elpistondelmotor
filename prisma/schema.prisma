@@ -4,7 +4,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // DATABASE_URL: string *pooled* de Neon (la usa la app en Cloudflare).
+  // DIRECT_URL: string directa de Neon (sin "-pooler"), solo para migraciones.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Branch {

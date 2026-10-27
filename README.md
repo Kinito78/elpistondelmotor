@@ -5,18 +5,19 @@ disponibilidad y las citas sincronizadas contra el calendario de **GoHighLevel (
 completo y ejecutable en **modo mock** mientras no existan credenciales reales — más un panel de
 administración con agenda, catálogo, barberos y reportes.
 
-Stack: Next.js 15 (App Router) · React 19 · TypeScript · Prisma + SQLite · Tailwind CSS 4 · Zod ·
+Stack: Next.js 15 (App Router) · React 19 · TypeScript · Prisma + PostgreSQL (Neon) · Cloudflare Workers (OpenNext) · Tailwind CSS 4 · Zod ·
 date-fns / date-fns-tz. Sin Docker, sin pagos en línea, sin login de cliente.
 
 ---
 
 ## Arranque
 
-Requisitos: **Node.js ≥ 20.11** (probado en Node 24) y npm.
+Requisitos: **Node.js ≥ 22** (probado en Node 24) y npm. Copia `.env.example` a `.env` y pon las connection strings de Neon.
 
 ```bash
 npm install
-npm run db:reset      # recrea la base SQLite y carga el seed determinista
+npm run db:migrate    # crea las tablas en Neon
+npm run seed          # carga el seed determinista
 npm run dev           # http://localhost:3000
 ```
 
@@ -28,9 +29,11 @@ La app **siempre** corre en `http://localhost:3000`.
 |---|---|
 | `npm install` | Instala dependencias |
 | `npm run dev` | Dev server en el puerto 3000 |
-| `npm run db:reset` | **Resetea el estado**: recrea SQLite desde las migraciones y vuelve a sembrar |
 | `npm run seed` | Solo re-siembra (borra y recrea los datos, no el esquema) |
-| `npm run build` | `prisma generate` + `migrate deploy` + build de producción |
+| `npm run build` | `prisma generate` + build de Next.js |
+| `npm run db:migrate` | Aplica las migraciones a la base (`prisma migrate deploy`) |
+| `npm run preview` | Build para Cloudflare y lo corre local con el runtime de Workers |
+| `npm run deploy` | Build para Cloudflare y publica el Worker |
 | `npm start` | Server de producción en el puerto 3000 |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run setup` | install + generate + migrate deploy + seed, todo junto |
@@ -74,6 +77,27 @@ disponibles).
 - El pago es en el local; el sitio nunca cobra. El admin puede marcar "Pagado en local".
 
 ---
+
+## Deploy en Cloudflare Workers
+
+La app corre en un Worker vía [OpenNext](https://opennext.js.org/cloudflare) (`wrangler.jsonc`,
+`open-next.config.ts`). Prisma usa el adaptador de Neon (`@prisma/adapter-neon`) y crea un cliente
+por petición (`src/lib/db.ts`). El build **no** toca la base: las migraciones se corren aparte.
+
+Primera vez:
+
+1. En Neon copia las dos connection strings (pooled y directa) a tu `.env` local.
+2. `npm run db:migrate && npm run seed` — crea las tablas y los datos iniciales en Neon.
+3. `npx wrangler login`
+4. `npx wrangler secret put DATABASE_URL` — pega la string **pooled**.
+5. `npm run deploy`
+
+O desde el dashboard: *Workers & Pages → Create → Import a repository*, build command
+`npx opennextjs-cloudflare build`, deploy command `npx opennextjs-cloudflare deploy`, y
+`DATABASE_URL` como secret (en *Settings → Variables and Secrets*, también para el build).
+
+Las variables no secretas (zona horaria, horizonte, GHL base) están en `vars` de `wrangler.jsonc`.
+Cada dominio o subdominio de sucursal se agrega como *Custom Domain* del Worker.
 
 ## Conectar GoHighLevel
 
@@ -129,4 +153,4 @@ reales). Las relevantes para GHL: `GHL_MODE`, `GHL_API_KEY`, `GHL_LOCATION_ID`, 
 > siguió el rubric: esa cita usa **Corte clásico** ($250) para que el total del reporte sea
 > exactamente $430.00.
 
-Para volver al estado inicial en cualquier momento: `npm run db:reset`.
+Para volver al estado inicial en cualquier momento: `npm run seed` (borra y recrea los datos).

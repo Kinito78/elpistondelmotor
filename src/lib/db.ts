@@ -1,15 +1,43 @@
+import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaClient } from "@prisma/client";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { headers } from "next/headers";
+
+function createClient() {
+  return new PrismaClient({
+    adapter: new PrismaNeon({ connectionString: process.env.DATABASE_URL }),
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+  });
+}
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-  });
+// En Cloudflare Workers una conexión (WebSocket a Neon) abierta en una petición
+// no se puede reutilizar en otra, así que en producción hay un cliente por
+// petición, indexado por su ExecutionContext. En dev basta uno global.
+const clientsByRequest = new WeakMap<object, PrismaClient>();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+function getClient(): PrismaClient {
+  if (process.env.NODE_ENV !== "production") {
+    return (globalForPrisma.prisma ??= createClient());
+  }
+  const { ctx } = getCloudflareContext();
+  let client = clientsByRequest.get(ctx);
+  if (!client) {
+    client = createClient();
+    clientsByRequest.set(ctx, client);
+  }
+  return client;
+}
+
+/** Cliente de Prisma de la petición actual (se resuelve en cada acceso). */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getClient();
+    const value = Reflect.get(client, prop, client);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
 
 /** Hosts de desarrollo: siempre resuelven a la primera sucursal (sin dominio configurado). */
 const DEV_HOSTS = new Set(["localhost", "127.0.0.1"]);

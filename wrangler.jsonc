@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "elpistondelmotor",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "elpistondelmotor"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  // Config no secreta. Los secretos (DATABASE_URL) van con
+  // `npx wrangler secret put DATABASE_URL` o en el dashboard de Cloudflare.
+  "vars": {
+    "BUSINESS_TIMEZONE": "America/Mexico_City",
+    "DEFAULT_COUNTRY_CODE": "+52",
+    "BOOKING_HORIZON_DAYS": "60",
+    "MIN_LEAD_MINUTES": "60",
+    "SLOT_STEP_MINUTES": "15",
+    "GHL_API_BASE": "https://services.leadconnectorhq.com",
+    "GHL_API_VERSION": "2021-04-15"
+  }
+}

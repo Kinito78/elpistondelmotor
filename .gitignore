@@ -17,3 +17,9 @@ npm-debug.log*
 
 .env
 .env.local
+
+# Cloudflare / OpenNext
+.open-next/
+.wrangler/
+.dev.vars
+cloudflare-env.d.ts
